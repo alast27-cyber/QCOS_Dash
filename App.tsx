@@ -1,0 +1,162 @@
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import AnimatedBackground from './components/AnimatedBackground';
+import GlassPanel from './components/GlassPanel';
+import { CpuChipIcon, XIcon, BoxIcon, FlaskConicalIcon, AtomIcon, GitBranchIcon, ShieldCheckIcon, BrainCircuitIcon, ServerCogIcon } from './components/Icons'; 
+import ResourceSteward from './components/ResourceSteward';
+import HolographicContainer from './components/HolographicContainer';
+import HolographicTesseract from './components/HolographicTesseract';
+import CubeFace from './components/CubeFace';
+import CHIPSBackOffice from './components/CHIPSBackOffice';
+import QCOSSystemEvolutionInterface from './components/QCOSSystemEvolutionInterface';
+import AICommandConsole from './components/AICommandConsole';
+import SystemLog from './components/SystemLog';
+import KernelScheduler from './components/KernelScheduler';
+import QuantumProgrammingInterface from './components/QuantumProgrammingInterface';
+import MolecularSimulationToolkit from './components/MolecularSimulationToolkit';
+import QMLForge from './components/QMLForge';
+import MetaprogrammingInterface from './components/MetaprogrammingInterface';
+import ChatLogPanel from './components/ChatLogPanel';
+import QuantumExecutionFlow from './components/QuantumExecutionFlow';
+import { initialCodebase } from './utils/codebase'; 
+import { useAgentQ } from './hooks/useAgentQ';
+import DeploymentSequence from './components/DeploymentSequence';
+import GlobalAbundanceEngine from './components/GlobalAbundanceEngine';
+import QPUHealth from './components/QPUHealth';
+import QuantumAppExchange from './components/QuantumAppExchange';
+import PowerMetrics from './components/PowerMetrics';
+import PublicDeploymentOptimizationHub from './components/PublicDeploymentOptimizationHub';
+import TextToAppInterface from './components/TextToAppInterface';
+import AgentQEnhancedInsights from './components/AgentQEnhancedInsights';
+
+// --- Global Constants (Restored to fix ReferenceError) ---
+
+const initialLogs: any[] = [
+    { id: 3, time: "00:00:03", level: 'INFO', msg: "IAI Kernel initialized." },
+    { id: 2, time: "00:00:02", level: 'INFO', msg: "Quantum link established." },
+    { id: 1, time: "00:00:01", level: 'INFO', msg: "QCOS Dashboard v3.11 booting..." },
+];
+
+const initialSystemHealth = {
+    cognitiveEfficiency: 0.94, semanticIntegrity: 0.985, dataThroughput: 1.21,
+    ipsThroughput: 1.337, powerEfficiency: 1.0, decoherenceFactor: 1.0,
+    processingSpeed: 1.0, qpuTempEfficiency: 1.0, qubitStability: 200,
+};
+
+const initialApps: any[] = [
+  { id: 'mol-sim', name: 'Molecular Simulation', description: 'Simulate molecular interactions.', icon: FlaskConicalIcon, status: 'installed', component: <MolecularSimulationToolkit /> },
+];
+
+const initialMetaprogrammingPlaceholders = {
+  'README.md': '# QCOS System\nWelcome to the Metaprogramming layer.'
+};
+
+const faceRotations = {
+  0: { x: 0, y: 0 }, 1: { x: 0, y: -90 }, 2: { x: 0, y: 180 }, 
+  3: { x: 0, y: 90 }, 4: { x: -90, y: 0 }, 5: { x: 90, y: 0 }
+};
+
+const CUBE_SIZE = 800;
+
+// --- Helper for Layout ---
+const getPanelMetadata = (version: number) => ({
+  0: { layout: 'grid grid-cols-2 gap-2', panels: [{ id: 'agentq-core', title: "Agent Q Core" }, { id: 'sys-log', title: 'System Log' }] },
+  1: { layout: 'grid grid-cols-1', panels: [{ id: 'meta-prog', title: 'Metaprogramming' }] },
+  2: { layout: 'grid grid-cols-1', panels: [{ id: 'qpu-health', title: 'Hardware' }] },
+  3: { layout: 'grid grid-cols-1', panels: [{ id: 'ai-ops', title: 'AI Ops' }] },
+  4: { layout: 'grid grid-cols-1', panels: [{ id: 'text-to-app', title: 'Generator' }] },
+  5: { layout: 'grid grid-cols-1', panels: [{ id: 'quantum-app-exchange', title: 'App Store' }] }
+});
+
+const App: React.FC = () => {
+  const [isDeploying, setIsDeploying] = useState(true);
+  const [rotation, setRotation] = useState({ x: -15, y: 35 });
+  const [isCubeFocused, setIsCubeFocused] = useState(false);
+  const [viewedFaceIndex, setViewedFaceIndex] = useState(0);
+  const [focusedPanelId, setFocusedPanelId] = useState<string | null>(null);
+  const [systemLogs, setSystemLogs] = useState(initialLogs);
+  const [marketApps, setMarketApps] = useState(initialApps);
+  const [uriAssignments, setUriAssignments] = useState<any[]>([]);
+  const [qcosVersion] = useState(3.11);
+  const [systemHealth] = useState(initialSystemHealth);
+
+  const [codebaseState, setCodebaseState] = useState(() => {
+    const defaultCode = { ...initialCodebase, ...initialMetaprogrammingPlaceholders };
+    return defaultCode;
+  });
+
+  const panelMetadata = useMemo(() => getPanelMetadata(qcosVersion), [qcosVersion]);
+
+  const handleApplyPatch = useCallback((filePath: string, newContent: string) => {
+    setCodebaseState(prev => ({ ...prev, [filePath]: newContent }));
+  }, []);
+
+  const panelData = useMemo(() => {
+    const getContent = (id: string) => {
+      switch (id) {
+        case 'qcos-evo': return <QCOSSystemEvolutionInterface systemHealth={systemHealth} />;
+        case 'meta-prog': return <MetaprogrammingInterface codebase={codebaseState} onApplyPatch={handleApplyPatch} />;
+        case 'qpu-health': return <QPUHealth systemHealth={systemHealth} />;
+        case 'sys-log': return <SystemLog logs={systemLogs} />;
+        case 'quantum-app-exchange': return <QuantumAppExchange apps={marketApps} onInstall={() => {}} onDeployApp={() => {}} uriAssignments={uriAssignments}/>;
+        case 'ai-ops': return <AICommandConsole />;
+        case 'agentq-core': return <AgentQEnhancedInsights systemHealth={systemHealth} />;
+        case 'text-to-app': return <TextToAppInterface />;
+        default: return <div className="p-4 text-cyan-700">Interface Offline</div>;
+      }
+    };
+
+    const hydrated: any = {};
+    Object.entries(panelMetadata).forEach(([idx, face]: any) => {
+      hydrated[idx] = { layout: face.layout, panels: face.panels.map((p: any) => ({ ...p, content: getContent(p.id) })) };
+    });
+    return hydrated;
+  }, [codebaseState, systemHealth, systemLogs, marketApps, uriAssignments, panelMetadata, handleApplyPatch]);
+
+  return (
+    <>
+      {isDeploying && <DeploymentSequence onComplete={() => setIsDeploying(false)} />}
+      <div className="w-screen h-screen bg-black text-cyan-300 font-mono overflow-hidden">
+        <AnimatedBackground />
+        <div className="relative z-10 p-4 h-full flex flex-col pointer-events-none">
+          <header className="flex items-center justify-between pointer-events-auto">
+            <div className="flex items-center space-x-4">
+              <CpuChipIcon className="w-10 h-10 text-cyan-400" />
+              <h1 className="text-2xl font-bold text-white uppercase tracking-tighter">QCOS Core v{qcosVersion}</h1>
+            </div>
+          </header>
+
+          <main className="flex-grow flex items-center justify-center pointer-events-auto" style={{ perspective: '2000px' }}>
+            <HolographicContainer targetRotation={rotation} size={CUBE_SIZE}>
+              <HolographicTesseract>
+                {[0, 1, 2, 3, 4, 5].map((idx) => (
+                  <CubeFace key={idx} isFocused={isCubeFocused && idx === viewedFaceIndex}>
+                    <div className={`w-full h-full p-2 ${panelData[idx].layout}`}>
+                      {panelData[idx].panels.map((p: any) => (
+                        <div key={p.id} onClick={() => setFocusedPanelId(p.id)} className="cursor-pointer">
+                          <GlassPanel title={p.title}>{p.content}</GlassPanel>
+                        </div>
+                      ))}
+                    </div>
+                  </CubeFace>
+                ))}
+              </HolographicTesseract>
+            </HolographicContainer>
+          </main>
+        </div>
+      </div>
+      
+      {focusedPanelId && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-10" onClick={() => setFocusedPanelId(null)}>
+           <div className="w-full h-full" onClick={e => e.stopPropagation()}>
+              <GlassPanel title="Focus Mode">
+                 <div className="text-white">Active Panel: {focusedPanelId}</div>
+                 <button onClick={() => setFocusedPanelId(null)} className="mt-4 bg-cyan-900 px-4 py-2 rounded">Close</button>
+              </GlassPanel>
+           </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default App;
