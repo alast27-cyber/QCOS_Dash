@@ -12,4 +12,4 @@ jobs:
       - name: Push to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://alast27-cyber:$HF_TOKEN@huggingface.co/spaces/alast27-cyber/QCOS-Bridge main
+        run: git push --force https://alast27-cyber:$HF_TOKEN@huggingface.co/spaces/alast27-cyber/qcos_bridge main
